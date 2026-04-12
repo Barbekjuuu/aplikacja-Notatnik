@@ -4,14 +4,32 @@ from .models import Note
 from .forms import NoteForm   # utworzymy ten formularz w następnym kroku
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.shortcuts import redirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger#zadanie 10 - importujemy narzędzia do paginacji
 
 def home(request):
     """Strona powitalna"""
     return render(request, 'home.html')
 
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 def note_list(request):
-    """Lista wszystkich notatek użytkownika"""
-    notes = Note.objects.all().order_by('-created_at')
+    """Lista notatek z paginacją - maksymalnie 3 notatki na stronę"""
+    
+    all_notes = Note.objects.all().order_by('-created_at')
+    
+    # Tworzymy paginator: 3 notatki na stronę
+    paginator = Paginator(all_notes, 3)
+    
+    # Pobieramy numer strony z adresu URL (np. ?page=2)
+    page_number = request.GET.get('page')
+    
+    try:
+        notes = paginator.page(page_number)
+    except PageNotAnInteger:
+        notes = paginator.page(1)           # jeśli ktoś wpisze nie liczbę → pokaż stronę 1
+    except EmptyPage:
+        notes = paginator.page(paginator.num_pages)  # jeśli strona za duża → pokaż ostatnią
+    
     return render(request, 'notes/list.html', {'notes': notes})
 
 def note_create(request):
@@ -103,3 +121,6 @@ def note_detail(request, pk):
     }
     
     return render(request, 'notes/detail.html', context)
+
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+

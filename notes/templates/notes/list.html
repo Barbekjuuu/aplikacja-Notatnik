@@ -29,14 +29,36 @@
                     {% endif %}
                 </small>
                 <p style="margin: 10px 0;">{{ note.content|truncatewords:50 }}</p>
-
-                <a href="{% url 'note_edit' note.id %}" style="color: #3498db;">Edytuj</a>
-                <a href="{% url 'note_delete' note.id %}"
+                
+                <a href="{% url 'note_edit' note.id %}" style="color: #3498db;">Edytuj</a> |
+                <a href="{% url 'note_delete' note.id %}" 
                    style="color: #e74c3c;"
                    onclick="return confirm('Czy na pewno chcesz usunąć tę notatkę?')">Usuń</a>
             </li>
         {% endfor %}
         </ul>
+
+        <!-- PAGINACJA -->
+        <div style="margin-top: 30px; text-align: center;">
+            {% if notes.has_previous %}
+                <a href="?page={{ notes.previous_page_number }}" 
+                   style="margin: 0 10px; padding: 8px 15px; background: #3498db; color: white; text-decoration: none; border-radius: 5px;">
+                    ← Poprzednia
+                </a>
+            {% endif %}
+
+            <span style="margin: 0 15px;">
+                Strona {{ notes.number }} z {{ notes.paginator.num_pages }}
+            </span>
+
+            {% if notes.has_next %}
+                <a href="?page={{ notes.next_page_number }}" 
+                   style="margin: 0 10px; padding: 8px 15px; background: #3498db; color: white; text-decoration: none; border-radius: 5px;">
+                    Następna →
+                </a>
+            {% endif %}
+        </div>
+
     {% else %}
         <p>Nie masz jeszcze żadnych notatek.</p>
     {% endif %}
