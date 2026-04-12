@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Rejestracja - Notatnik{% endblock %}
+
+{% block content %}
+    <h1>Rejestracja nowego użytkownika</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <br><br>
+        <button type="submit" style="padding: 12px 25px; font-size: 16px;">
+            Zarejestruj się
+        </button>
+    </form>
+    
+    <p style="margin-top: 20px;">
+        Masz już konto? 
+        <a href="{% url 'login' %}">Zaloguj się tutaj</a>
+    </p>
+{% endblock %}

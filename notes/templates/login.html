@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Logowanie - Notatnik{% endblock %}
+
+{% block content %}
+    <h1>Logowanie</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <br><br>
+        <button type="submit" style="padding: 12px 25px; font-size: 16px;">
+            Zaloguj się
+        </button>
+    </form>
+    
+    <p style="margin-top: 20px;">
+        Nie masz jeszcze konta? 
+        <a href="{% url 'register' %}">Zarejestruj się tutaj</a>
+    </p>
+{% endblock %}

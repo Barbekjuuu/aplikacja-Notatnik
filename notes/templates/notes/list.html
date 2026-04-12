@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Moje notatki{% endblock %}
+
+{% block content %}
+    <h1>Moje notatki</h1>
+    
+    <a href="{% url 'note_create' %}" 
+       style="background-color: #27ae60; color: white; padding: 10px 15px; 
+              text-decoration: none; border-radius: 5px; margin-bottom: 20px; display: inline-block;">
+        + Nowa notatka
+    </a>
+
+    <hr>
+
+    {% if notes %}
+        <ul style="list-style: none; padding: 0;">
+        {% for note in notes %}
+            <li style="background: white; padding: 15px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <h3>
+                    <a href="{% url 'note_detail' note.id %}" style="text-decoration: none; color: inherit;">
+                        {{ note.title }}
+                    </a>
+                </h3>
+                <small>
+                    Utworzono: {{ note.created_at|date:"d.m.Y H:i" }}
+                    {% if note.author %}
+                        | Autor: {{ note.author.username }}
+                    {% endif %}
+                </small>
+                <p style="margin: 10px 0;">{{ note.content|truncatewords:50 }}</p>
+
+                <a href="{% url 'note_edit' note.id %}" style="color: #3498db;">Edytuj</a>
+                <a href="{% url 'note_delete' note.id %}"
+                   style="color: #e74c3c;"
+                   onclick="return confirm('Czy na pewno chcesz usunąć tę notatkę?')">Usuń</a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nie masz jeszcze żadnych notatek.</p>
+    {% endif %}
+{% endblock %}

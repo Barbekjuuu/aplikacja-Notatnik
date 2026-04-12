@@ -1,0 +1,24 @@
+# Django
+*.pyc
+*.pyo
+__pycache__/
+db.sqlite3
+db.sqlite3-journal
+
+# Środowisko wirtualne
+venv/
+ENV/
+env/
+
+# Pliki IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Pliki systemowe
+.DS_Store
+Thumbs.db
+
+# Logi
+*.log

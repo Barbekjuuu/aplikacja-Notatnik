@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ note.title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ note.title }}</h1>
+    
+    <p><strong>Data utworzenia:</strong> {{ note.created_at|date:"d.m.Y H:i" }}</p>
+    
+    {% if note.updated_at and note.updated_at != note.created_at %}
+        <p><strong>Ostatnia edycja:</strong> {{ note.updated_at|date:"d.m.Y H:i" }}</p>
+    {% endif %}
+    
+    {% if note.author %}
+        <p><strong>Autor:</strong> {{ note.author.username }}</p>
+    {% endif %}
+    
+    <hr>
+    
+    <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.6;">
+        {{ note.content }}
+    </div>
+    
+    <br><br>
+    <a href="{% url 'note_edit' note.id %}" style="color: #3498db;">✏️ Edytuj notatkę</a> |
+    <a href="{% url 'note_delete' note.id %}" 
+       style="color: #e74c3c;"
+       onclick="return confirm('Czy na pewno chcesz usunąć tę notatkę?')">🗑️ Usuń notatkę</a> |
+    <a href="{% url 'note_list' %}">← Powrót do listy notatek</a>
+{% endblock %}
