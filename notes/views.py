@@ -1,57 +1,129 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
-from .models import Note
-from .forms import NoteForm   # utworzymy ten formularz w następnym kroku
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.shortcuts import redirect
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger#zadanie 10 - importujemy narzędzia do paginacji
-
-def home(request):
-    """Strona powitalna"""
-    return render(request, 'home.html')
-
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q # do wyszukiwania notatek po tytule i treści - lekcja 22 - zadanie 6
+
+from .models import Note
+from .forms import NoteForm
+
+
+# ====================== STRONA GŁÓWNA ======================
+# Pokazuje 5 najnowszych notatek - lekcja 22 -zadanie 3
+def home(request):
+    """Strona główna - pokazuje 5 najnowszych notatek"""
+    
+    latest_notes = Note.objects.all().order_by('-created_at')[:5]
+    
+    return render(request, 'home.html', {'latest_notes': latest_notes})
+
+
+# ====================== LISTA NOTATEK (Lekcja 22 - zadanie 6) ======================
 
 def note_list(request):
-    """Lista notatek z paginacją - maksymalnie 3 notatki na stronę"""
+    """Lista notatek z wyszukiwarką i paginacją"""
+    
+    query = request.GET.get('q', '')   # pobieramy frazę z paska adresu (?q=coś)
     
     all_notes = Note.objects.all().order_by('-created_at')
     
-    # Tworzymy paginator: 3 notatki na stronę
-    paginator = Paginator(all_notes, 3)
+    if query:
+        all_notes = all_notes.filter(
+            Q(title__icontains=query) | Q(content__icontains=query)
+        )
     
-    # Pobieramy numer strony z adresu URL (np. ?page=2)
+    # Paginacja
+    paginator = Paginator(all_notes, 6)
     page_number = request.GET.get('page')
     
     try:
         notes = paginator.page(page_number)
     except PageNotAnInteger:
-        notes = paginator.page(1)           # jeśli ktoś wpisze nie liczbę → pokaż stronę 1
+        notes = paginator.page(1)
     except EmptyPage:
-        notes = paginator.page(paginator.num_pages)  # jeśli strona za duża → pokaż ostatnią
+        notes = paginator.page(paginator.num_pages)
     
-    return render(request, 'notes/list.html', {'notes': notes})
+    return render(request, 'notes/list.html', {
+        'notes': notes,
+        'query': query   # przekazujemy wyszukiwaną frazę do szablonu
+    })
+
+# # ====================== LISTA NOTATEK Z PAGINACJĄ (Lekcja 20 + 22) ======================
+
+# def note_list(request):
+#     """Lista notatek z paginacją - maksymalnie 3 notatki na stronę"""
+    
+#     all_notes = Note.objects.all().order_by('-created_at')
+    
+#     # Tworzymy paginator: 3 notatki na stronę
+#     paginator = Paginator(all_notes, 3)
+    
+#     # Pobieramy numer strony z adresu URL (np. ?page=2)
+#     page_number = request.GET.get('page')
+    
+#     try:
+#         notes = paginator.page(page_number)
+#     except PageNotAnInteger:
+#         notes = paginator.page(1)           # jeśli ktoś wpisze nie liczbę → pokaż stronę 1
+#     except EmptyPage:
+#         notes = paginator.page(paginator.num_pages)  # jeśli strona za duża → pokaż ostatnią stronę
+    
+#     return render(request, 'notes/list.html', {'notes': notes})
+
+
+# ====================== TWORZENIE I EDYCJA NOTATEK ======================
 
 def note_create(request):
     """Tworzenie nowej notatki"""
     if request.method == 'POST':
         form = NoteForm(request.POST)
         if form.is_valid():
-            note = form.save(commit=False)      # przygotuj obiekt, ale nie zapisuj jeszcze
-            
-            # Jeśli użytkownik jest zalogowany, przypisz autora
+            note = form.save(commit=False)
             if request.user.is_authenticated:
                 note.author = request.user
-            # Jeśli nie jest zalogowany, pole author zostanie puste (null)
-            
-            note.save()                         # zapisz notatkę
+            note.save()
             return redirect('note_list')
     else:
         form = NoteForm()
     
     return render(request, 'notes/create.html', {'form': form})
 
-    # ====================== AUTENTYKACJA ======================
+
+def note_edit(request, pk):
+    """Edycja istniejącej notatki"""
+    note = get_object_or_404(Note, pk=pk)
+
+    if request.method == 'POST':
+        form = NoteForm(request.POST, instance=note)
+        if form.is_valid():
+            form.save()
+            return redirect('note_list')
+    else:
+        form = NoteForm(instance=note)
+
+    return render(request, 'notes/create.html', {'form': form, 'note': note})
+
+
+# ====================== SZCZEGÓŁY I USUWANIE ======================
+
+def note_detail(request, pk):
+    """Szczegóły pojedynczej notatki"""
+    note = get_object_or_404(Note, pk=pk)
+    return render(request, 'notes/detail.html', {'note': note})
+
+
+def note_delete(request, pk):
+    """Kasowanie notatki"""
+    note = get_object_or_404(Note, pk=pk)
+    
+    if request.method == 'POST':
+        note.delete()
+        return redirect('note_list')
+    
+    return render(request, 'notes/delete.html', {'note': note})
+
+
+# ====================== AUTENTYKACJA (Lekcja 20) ======================
 
 def register_view(request):
     """Rejestracja nowego użytkownika"""
@@ -59,7 +131,7 @@ def register_view(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)           # automatycznie logujemy użytkownika po rejestracji
+            login(request, user)
             return redirect('note_list')
     else:
         form = UserCreationForm()
@@ -86,41 +158,11 @@ def logout_view(request):
     logout(request)
     return redirect('home')
 
-# =========================================================
-def note_delete(request, pk):
-    """Kasowanie notatki"""
-    note = get_object_or_404(Note, pk=pk)   # znajdź notatkę po id lub pokaż 404
-    
-    if request.method == 'POST':
-        note.delete()                       # usuń notatkę z bazy
-        return redirect('note_list')
-    
-    return render(request, 'notes/delete.html', {'note': note})
 
+# ====================== ZADANIE 2 - LEKCJA 22 ======================
+# Widok: notatki z danej kategorii
 
-def note_edit(request, pk):
-    """Edycja istniejącej notatki"""
-    note = get_object_or_404(Note, pk=pk)   # pobierz notatkę po id
-
-    if request.method == 'POST':
-        form = NoteForm(request.POST, instance=note)   # wypełnij formularz danymi z notatki
-        if form.is_valid():
-            form.save()
-            return redirect('note_list')
-    else:
-        form = NoteForm(instance=note)                 # wypełnij formularz danymi z istniejącej notatki
-
-    return render(request, 'notes/create.html', {'form': form, 'note': note})
-
-def note_detail(request, pk):
-    """Szczegóły pojedynczej notatki - widok szczegółów"""
-    note = get_object_or_404(Note, pk=pk)   # pobiera notatkę po id lub pokazuje 404 jeśli nie istnieje
-    
-    context = {
-        'note': note,
-    }
-    
-    return render(request, 'notes/detail.html', context)
-
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
+def notes_by_category(request, category_id):
+    """Wyświetla wszystkie notatki należące do wybranej kategorii"""
+    notes = Note.objects.filter(category_id=category_id).order_by('-created_at')
+    return render(request, 'notes/notes_by_category.html', {'notes': notes})

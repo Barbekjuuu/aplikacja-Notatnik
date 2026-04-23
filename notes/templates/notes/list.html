@@ -3,63 +3,73 @@
 {% block title %}Moje notatki{% endblock %}
 
 {% block content %}
-    <h1>Moje notatki</h1>
-    
-    <a href="{% url 'note_create' %}" 
-       style="background-color: #27ae60; color: white; padding: 10px 15px; 
-              text-decoration: none; border-radius: 5px; margin-bottom: 20px; display: inline-block;">
-        + Nowa notatka
-    </a>
+<h1>Moje notatki</h1>
 
-    <hr>
-
-    {% if notes %}
-        <ul style="list-style: none; padding: 0;">
-        {% for note in notes %}
-            <li style="background: white; padding: 15px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                <h3>
-                    <a href="{% url 'note_detail' note.id %}" style="text-decoration: none; color: inherit;">
-                        {{ note.title }}
-                    </a>
-                </h3>
-                <small>
-                    Utworzono: {{ note.created_at|date:"d.m.Y H:i" }}
-                    {% if note.author %}
-                        | Autor: {{ note.author.username }}
-                    {% endif %}
-                </small>
-                <p style="margin: 10px 0;">{{ note.content|truncatewords:50 }}</p>
-                
-                <a href="{% url 'note_edit' note.id %}" style="color: #3498db;">Edytuj</a> |
-                <a href="{% url 'note_delete' note.id %}" 
-                   style="color: #e74c3c;"
-                   onclick="return confirm('Czy na pewno chcesz usunąć tę notatkę?')">Usuń</a>
-            </li>
-        {% endfor %}
-        </ul>
-
-        <!-- PAGINACJA -->
-        <div style="margin-top: 30px; text-align: center;">
-            {% if notes.has_previous %}
-                <a href="?page={{ notes.previous_page_number }}" 
-                   style="margin: 0 10px; padding: 8px 15px; background: #3498db; color: white; text-decoration: none; border-radius: 5px;">
-                    ← Poprzednia
-                </a>
-            {% endif %}
-
-            <span style="margin: 0 15px;">
-                Strona {{ notes.number }} z {{ notes.paginator.num_pages }}
-            </span>
-
-            {% if notes.has_next %}
-                <a href="?page={{ notes.next_page_number }}" 
-                   style="margin: 0 10px; padding: 8px 15px; background: #3498db; color: white; text-decoration: none; border-radius: 5px;">
-                    Następna →
-                </a>
-            {% endif %}
-        </div>
-
-    {% else %}
-        <p>Nie masz jeszcze żadnych notatek.</p>
+<!-- FORMULARZ WYSZUKIWANIA -->
+<form method="GET" style="margin-bottom: 20px;">
+    <input type="text" name="q" placeholder="Szukaj notatek..."
+           value="{{ query }}" style="padding: 8px; width: 300px;">
+    <button type="submit" style="padding: 8px 15px;">Szukaj</button>
+    {% if query %}
+    <a href="{% url 'note_list' %}" style="margin-left: 10px;">Wyczyść</a>
     {% endif %}
+</form>
+
+<a href="{% url 'note_create' %}"
+   style="background-color: #27ae60; color: white; padding: 10px 15px;
+          text-decoration: none; border-radius: 5px; margin-bottom: 20px; display: inline-block;">
+    + Nowa notatka
+</a>
+
+<hr>
+
+{% if notes %}
+<ul style="list-style: none; padding: 0;">
+    {% for note in notes %}
+    <li style="background: white; padding: 15px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <h3>
+            <a href="{% url 'note_detail' note.id %}" style="text-decoration: none; color: inherit;">
+                {{ note.title }}
+            </a>
+        </h3>
+        <small>
+            Utworzono: {{ note.created_at|date:"d.m.Y H:i" }}
+            {% if note.author %}
+            | Autor: {{ note.author.username }}
+            {% endif %}
+        </small>
+        <p style="margin: 10px 0;">{{ note.content|truncatewords:50 }}</p>
+
+        <a href="{% url 'note_edit' note.id %}" style="color: #3498db;">Edytuj</a> |
+        <a href="{% url 'note_delete' note.id %}"
+           style="color: #e74c3c;"
+           onclick="return confirm('Czy na pewno chcesz usunąć tę notatkę?')">Usuń</a>
+    </li>
+    {% endfor %}
+</ul>
+
+<!-- PAGINACJA -->
+<div style="margin-top: 30px; text-align: center;">
+    {% if notes.has_previous %}
+    <a href="?page={{ notes.previous_page_number }}"
+       style="margin: 0 10px; padding: 8px 15px; background: #3498db; color: white; text-decoration: none; border-radius: 5px;">
+        ← Poprzednia
+    </a>
+    {% endif %}
+
+    <span style="margin: 0 15px;">
+        Strona {{ notes.number }} z {{ notes.paginator.num_pages }}
+    </span>
+
+    {% if notes.has_next %}
+    <a href="?page={{ notes.next_page_number }}"
+       style="margin: 0 10px; padding: 8px 15px; background: #3498db; color: white; text-decoration: none; border-radius: 5px;">
+        Następna →
+    </a>
+    {% endif %}
+</div>
+
+{% else %}
+<p>Nie masz jeszcze żadnych notatek.</p>
+{% endif %}
 {% endblock %}

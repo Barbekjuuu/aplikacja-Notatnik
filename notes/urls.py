@@ -11,4 +11,6 @@ urlpatterns = [
     path('notes/<int:pk>/delete/', views.note_delete, name='note_delete'),
     path('notes/<int:pk>/edit/', views.note_edit, name='note_edit'),
     path('notes/<int:pk>/', views.note_detail, name='note_detail'),
+    # zadanie 2 - dodanie widoku do filtrowania notatek po kategorii - lekcja 22
+    path('category/<int:category_id>/', views.notes_by_category, name='notes_by_category'),
 ]

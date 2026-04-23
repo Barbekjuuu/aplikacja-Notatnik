@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notatki z kategorii</title>
+</head>
+<body>
+    <h1>Notatki z wybranej kategorii</h1>
+    
+    {% if notes %}
+        <ul>
+            {% for note in notes %}
+                <li>
+                    <strong>{{ note.title }}</strong><br>
+                    {{ note.content|truncatewords:20 }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Brak notatek w tej kategorii.</p>
+    {% endif %}
+</body>
+</html>

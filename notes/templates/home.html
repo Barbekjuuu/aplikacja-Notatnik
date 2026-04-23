@@ -9,11 +9,39 @@
         To Twoje prywatne miejsce na notatki, pomysły i ważne sprawy.
     </p>
 
+    <!-- ====================== 5 NAJNOWSZYCH NOTATEK (Zadanie 3 - lekcja 22) ====================== -->
+    <div style="max-width: 700px; margin: 40px auto; padding: 20px; background-color: #f8f9fa; border-radius: 10px;">
+        <h2 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">📌 5 najnowszych notatek</h2>
+        
+        {% if latest_notes %}
+            <ul style="list-style: none; padding: 0;">
+                {% for note in latest_notes %}
+                    <li style="margin-bottom: 15px; padding: 15px; background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <a href="{% url 'note_detail' note.pk %}" 
+                           style="text-decoration: none; color: #2c3e50; font-size: 18px; font-weight: bold;">
+                            {{ note.title }}
+                        </a>
+                        <br>
+                        <small style="color: #7f8c8d;">
+                            {{ note.created_at|date:"d.m.Y H:i" }}
+                            {% if note.category %}
+                                | Kategoria: <strong>{{ note.category.name }}</strong>
+                            {% endif %}
+                        </small>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p style="text-align: center; color: #7f8c8d;">Brak notatek. Dodaj pierwszą!</p>
+        {% endif %}
+    </div>
+    <!-- ======================================================================== -->
+
     <div style="text-align: center; margin-top: 40px;">
         <a href="{% url 'note_list' %}" 
            style="background-color: #3498db; color: white; padding: 12px 25px; 
                   text-decoration: none; border-radius: 5px; font-size: 18px;">
-            Zobacz moje notatki →
+            Zobacz wszystkie moje notatki →
         </a>
     </div>
 {% endblock %}
