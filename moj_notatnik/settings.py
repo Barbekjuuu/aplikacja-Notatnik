@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'notes', #dodajemy naszą aplikację do listy zainstalowanych aplikacji
+    'crispy_forms',#lekcja 22 - dodajemy crispy_forms do INSTALLED_APPS, aby móc korzystać z jego funkcji w szablonach
 ]
 
 MIDDLEWARE = [
