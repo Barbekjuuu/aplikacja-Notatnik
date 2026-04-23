@@ -39,6 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'notes', #dodajemy naszą aplikację do listy zainstalowanych aplikacji
     'crispy_forms',#lekcja 22 - dodajemy crispy_forms do INSTALLED_APPS, aby móc korzystać z jego funkcji w szablonach
+    'django.contrib.sites',           # ← lekcja 22 - zadanie 10 - dodajemy ze względu na allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',   # dodajemy lekcja 22 - zadanie 10 - 'allauth.socialaccount.middleware.SocialAccountMiddleware',  # jeśli korzystasz z social account
 ]
 
 ROOT_URLCONF = 'moj_notatnik.urls'
@@ -122,3 +127,20 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+#lekcja 22 - dodajemy konfiguracje django-allauth do obsługi rejestracji i logowania użytkowników
+# ====================== django-allauth ======================
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+LOGIN_REDIRECT_URL = 'note_list'
+LOGOUT_REDIRECT_URL = 'home'
+
+
+ACCOUNT_EMAIL_VERIFICATION = 'none'   # na początek bez weryfikacji email
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
+# ============================================================
