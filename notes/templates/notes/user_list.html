@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Lista użytkowników (tylko dla admina)</h2>
+    
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <thead>
+            <tr style="background: #2c3e50; color: white;">
+                <th style="padding: 12px; text-align: left;">Nazwa użytkownika</th>
+                <th style="padding: 12px; text-align: left;">Email</th>
+                <th style="padding: 12px; text-align: center;">Staff?</th>
+                <th style="padding: 12px; text-align: center;">Aktywny?</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="padding: 12px;">{{ user.username }}</td>
+                <td style="padding: 12px;">{{ user.email }}</td>
+                <td style="padding: 12px; text-align: center;">
+                    {% if user.is_staff %}✅{% else %}❌{% endif %}
+                </td>
+                <td style="padding: 12px; text-align: center;">
+                    {% if user.is_active %}✅{% else %}❌{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

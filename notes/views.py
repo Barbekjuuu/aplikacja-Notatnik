@@ -3,13 +3,18 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q # do wyszukiwania notatek po tytule i treści - lekcja 22 - zadanie 6
-
+#zadanie 5 - lekcja 24 - dodajemy dekorator login_required do widoku profilu, aby był dostępny tylko dla zalogowanych użytkowników
+from django.contrib.auth.decorators import login_required # lekcja 24 - zadanie 3 - strona profilu dostępna tylko dla zalogowanych użytkowników
 from .models import Note
 from .forms import NoteForm
-
+from .forms import CustomUserCreationForm # lekcja 24 - zadanie 6 - własny formularz rejestracji z dodatkowym polem email
+#zadanie 10 - lekcja 24 - tylko dla pracowników - dekorator staff_member_required
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.models import User
 
 # ====================== STRONA GŁÓWNA ======================
 # Pokazuje 5 najnowszych notatek - lekcja 22 -zadanie 3
+@login_required #lekcja 24 - zadanie 5 - strona główna dostępna tylko dla zalogowanych użytkowników
 def home(request):
     """Strona główna - pokazuje 5 najnowszych notatek"""
     
@@ -128,13 +133,15 @@ def note_delete(request, pk):
 def register_view(request):
     """Rejestracja nowego użytkownika"""
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        # form = UserCreationForm(request.POST) # lekcja 24 - zadanie 6 - zamieniamy domyślny formularz rejestracji na własny, który zawiera dodatkowe pole email
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
+            login(request, user) # lekcja 24 - zadanie 9 - automatyczne logowanie po rejestracji
             return redirect('note_list')
     else:
-        form = UserCreationForm()
+        # form = UserCreationForm()# lekcja 24 - zadanie 6 - zamieniamy domyślny formularz rejestracji na własny, który zawiera dodatkowe pole email
+        form = CustomUserCreationForm()
     
     return render(request, 'register.html', {'form': form})
 
@@ -166,3 +173,15 @@ def notes_by_category(request, category_id):
     """Wyświetla wszystkie notatki należące do wybranej kategorii"""
     notes = Note.objects.filter(category_id=category_id).order_by('-created_at')
     return render(request, 'notes/notes_by_category.html', {'notes': notes})
+# ====================== ZADANIE 3 - LEKCJA 24 ======================
+@login_required
+def profile(request):
+    """Strona profilu użytkownika"""
+    return render(request, 'notes/profile.html')
+
+    # ====================== LEKCJA 24 - ZADANIE 10 ======================
+@staff_member_required
+def user_list(request):
+    """Lista wszystkich użytkowników (tylko dla staff)"""
+    users = User.objects.all().order_by('username')
+    return render(request, 'notes/user_list.html', {'users': users})

@@ -44,18 +44,56 @@
 </head>
 <body>
 
-    <div class="header">
-        <h1>📝 Notatnik</h1>
-        <div class="nav">
-            <a href="{% url 'home' %}">Strona główna</a>
-            <a href="{% url 'note_list' %}">Moje notatki</a>
-            <a href="{% url 'note_create' %}">Nowa notatka</a>
-            <a href="{% url 'account_signup' %}">Rejestracja</a> # lekcja 22 - zadanie 10 - dodajemy link do rejestracji z allauth
-            <a href="{% url 'account_login' %}">Logowanie</a>   #lekcja 22 - zadanie 10 - dodajemy link do logowania z allauth
-            <a href="{% url 'account_logout' %}">Wyloguj</a> # lekcja 22 - zadanie 10 - dodajemy link do wylogowania z allauth
-        </div>
-        </div>
+<div class="header">
+    <h1>📝 Notatnik</h1>
+    
+    <!-- ===================================================== -->
+    <!-- LEKCJA 24 - ZADANIE 2: DYNAMICZNA NAWIGACJA -->
+    <!-- ===================================================== -->
+    <div class="nav">
+
+        <!-- Zawsze widoczne linki -->
+        <a href="{% url 'home' %}">Strona główna</a>
+        <a href="{% url 'note_list' %}">Moje notatki</a>
+        <a href="{% url 'note_create' %}">Nowa notatka</a>
+
+        <!-- ===================================================== -->
+        <!-- Jeśli użytkownik JEST zalogowany -->
+        <!-- ===================================================== -->
+        {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}">Profil</a>
+        <a href="{% url 'account_logout' %}">Wyloguj</a>
+        <span style="margin-left: 15px; color: #bdc3c7;">Witaj, <strong>{{ user.username }}</strong>!</span>
+
+        <!-- ===================================================== -->
+        <!-- Jeśli użytkownik NIE jest zalogowany -->
+        <!-- ===================================================== -->
+        {% else %}
+        <a href="{% url 'account_signup' %}">Rejestracja</a>
+        <a href="{% url 'account_login' %}">Logowanie</a>
+
+        {% endif %}
+
     </div>
+</div>
+
+<!-- ===================================================== -->
+<!-- LEKCJA 24 - ZADANIE 4: Wyświetlanie komunikatów messages -->
+<!-- ===================================================== -->
+{% if messages %}
+    {% for message in messages %}
+        <div style="max-width: 800px; margin: 0 auto 20px; padding: 15px 20px; 
+                    background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; 
+                    border-radius: 8px; text-align: center; position: relative;">
+            {{ message }}
+            <span onclick="this.parentElement.style.display='none'" 
+                  style="position: absolute; right: 15px; top: 10px; cursor: pointer; font-weight: bold; font-size: 18px;">
+                ×
+            </span>
+        </div>
+    {% endfor %}
+{% endif %}
+<!-- ===================================================== -->
 
     <div class="container">
         {% block content %}

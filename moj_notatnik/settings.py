@@ -113,11 +113,11 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
-
-# ====================== AUTENTYKACJA ======================
+#zadanie 1 - lekcja 24 - UWIERZYTELNIENIE - dodajemy ustawienia związane z logowaniem i rejestracją użytkowników (django-allauth)
+# ====================== UWIERZYTELNIENIE ======================
 LOGIN_REDIRECT_URL = 'note_list'      # po zalogowaniu przekieruj na listę notatek
 LOGOUT_REDIRECT_URL = 'home'          # po wylogowaniu przekieruj na stronę główną
-LOGIN_URL = 'login'                   # nazwa widoku logowania
+LOGIN_URL = 'account_login'                   # nazwa widoku logowania
 # ==========================================================
 
 USE_TZ = True
@@ -136,10 +136,6 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
-
-LOGIN_REDIRECT_URL = 'note_list'
-LOGOUT_REDIRECT_URL = 'home'
-
 
 ACCOUNT_EMAIL_VERIFICATION = 'none'   # na początek bez weryfikacji email
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="card" style="max-width: 600px; margin: 50px auto; padding: 40px; text-align: center;">
+        <h2>Witaj, <strong>{{ user.username }}</strong>!</h2>
+        <p style="color: #666; margin-top: 20px;">
+            To jest Twoja strona profilu. Tutaj możesz w przyszłości zmienić dane, hasło itp.
+        </p>
+        
+        <div style="margin-top: 30px;">
+            <a href="{% url 'note_list' %}" class="btn btn-primary">Moje notatki</a>
+            <a href="{% url 'account_logout' %}" class="btn btn-outline-danger" style="margin-left: 10px;">Wyloguj się</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
